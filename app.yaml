@@ -1,0 +1,11 @@
+runtime: python27
+api_version: 1
+threadsafe: true
+
+env_variables:
+    MY_NAME: 'Yabin Cui'
+
+handlers:
+- url: /.*
+  secure: always
+  script: main.app
