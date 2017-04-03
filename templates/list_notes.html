@@ -10,15 +10,18 @@
   <div class="content">
   
   	{% for note in note_values %}
-    <p> Dump Note: </p>
-    <p> Note id: {{ note['note_id'] }} </p>
     <p> Date: {{ note['date_time'] }} </p>
-    <p> User id: {{ note['user_id'] }}, email: {{ note['user_email'] }} </p>
     <p> State: {{ note['state'] }} </p>
     <p> Priority: {{ note['priority'] }} </p>
     <p> Title: {{ note['title'] }} </p>
     <p> Task: {{ note['task'] }} </p>
+    	{% if note['parent'] %}
+    	<p> Parent note: <a href="/dump_note?note_id={{note['parent'].note_id}}">
+    		{{ note['parent'].title }} </a></p>
+    	{% endif %}
     <p> <a href="/change_note_form?note_id={{note['note_id']}}"> Change Note </a> </p>
+    <p> <a href="/add_note_form?parent_note_id={{note['note_id']}}"> Create Sub note </a> </p>
+    <br>
     {% endfor %}
     <p><a href="/add_note_form">Add Note </a> </p>
 

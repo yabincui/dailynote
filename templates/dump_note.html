@@ -12,12 +12,16 @@
     <p> Dump Note: </p>
     <p> Note id: {{ note_id }} </p>
     <p> Date: {{ date_time }} </p>
-    <p> User id: {{ user_id }}, email: {{ user_email }} </p>
     <p> State: {{ state }} </p>
     <p> Priority: {{ priority }} </p>
     <p> Title: {{ title }} </p>
     <p> Task: {{ task }} </p>
+  	{% if parent %}
+    	<p> Parent note: <a href="/dump_note?note_id={{parent.note_id}}">
+	   		{{ parent.title }} </a></p>
+   	{% endif %}
     <p> <a href="/change_note_form?note_id={{note_id}}"> Change Note </a> </p>
+    <p> <a href="/add_note_form?parent_note_id={{note_id}}"> Create Sub note </a> </p>
     <p> <a href="/list_notes"> List notes </a> </p>
 
   </div>

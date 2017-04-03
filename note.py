@@ -34,6 +34,7 @@ import time
 import webapp2
 import logging
 import os
+from pytz.gae import pytz
 
 from google.appengine.ext import ndb
 
@@ -48,32 +49,45 @@ class Note(ndb.Model):
     priority = ndb.StringProperty()
     title = ndb.StringProperty()
     task = ndb.StringProperty()
+    parent_note_id = ndb.StringProperty()
 
 
 class AddNoteFormPage(webapp2.RequestHandler):
     @user_required
     def get(self):
-        return self.response.write(load_template('add_note.html'))
+        parent_note_id = self.request.get('parent_note_id', '')
+        template_values = {
+            'parent_note_id' : parent_note_id,
+        }
+        return self.response.write(load_template('add_note.html',
+                                                 template_values))
 
 class AddNotePage(webapp2.RequestHandler):
     @user_required
     def post(self):
         user_id = get_user_id()
-        date_time = datetime.datetime.now()
+        date_time = datetime.datetime.utcnow()
         state = "TODO"
         priority = self.request.get("priority", "p4")
         title = self.request.get("title")
         task = self.request.get("task")
+        parent_note_id = self.request.get("parent_note_id")
+        logging.debug('Add Note Page, parent_note_id = %s' % parent_note_id)
         
         note = Note(user_id=user_id, date_time=date_time,
                     state=state, priority=priority,
-                    title=title, task=task)
+                    title=title, task=task,
+                    parent_note_id=parent_note_id)
         note_key = note.put()
         note = note_key.get()
         note.note_id = note_key.urlsafe()
         note.put()
         return self.redirect('/dump_note?note_id=%s' % note.note_id)
-        
+
+def formatTime(date_time):
+    a = date_time.replace(tzinfo=pytz.utc).astimezone(pytz.timezone('America/Los_Angeles'))
+    return a.strftime("%y-%m-%d %H:%M:%S")
+
 class DumpNotePage(webapp2.RequestHandler):
     @user_required
     def get(self):
@@ -87,12 +101,19 @@ class DumpNotePage(webapp2.RequestHandler):
             'note_id' : str(note.note_id),
             'user_id' : note.user_id,
             'user_email' : get_user_email(),
-            'date_time' : str(note.date_time),
+            'date_time' : formatTime(note.date_time),
             'state' : note.state,
             'priority' : note.priority,
             'title' : note.title,
             'task' : note.task,
         }
+        logging.debug('Dump Note Page, parent_note_id = %s' % note.parent_note_id)
+        if note.parent_note_id:
+            note_key = ndb.Key(urlsafe=note.parent_note_id)
+            parent_note = note_key.get()
+            template_values['parent'] = parent_note
+        else:
+            template_values['parent'] = None
         self.response.write(load_template('dump_note.html', template_values))
 
 class ListNotesPage(webapp2.RequestHandler):
@@ -106,11 +127,17 @@ class ListNotesPage(webapp2.RequestHandler):
             value['note_id'] = note.note_id
             value['user_id'] = note.user_id
             value['user_email'] = get_user_email()
-            value['date_time'] = note.date_time
+            value['date_time'] = formatTime(note.date_time)
             value['state'] = note.state
             value['priority'] = note.priority,
             value['title'] = note.title,
             value['task'] = note.task
+            if note.parent_note_id:
+                note_key = ndb.Key(urlsafe=note.parent_note_id)
+                parent_note = note_key.get()
+                value['parent'] = parent_note
+            else:
+                value['parent'] = None
             note_values.append(value)
         template_values = {
             'note_values' : note_values,
