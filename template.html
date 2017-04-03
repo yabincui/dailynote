@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>{% block title %}Template Page{% endblock %}</title>
+    <style>
+      input {
+        display: block;
+      }
+    </style>
+  </head>
+
+  <body>
+
+  <div class="content">
+    {% block maincontent %}
+    
+    	<h2> Hello, {{ user }}! </h2>
+
+    {% endblock %}
+  </div>
+
+
+  </body>
+</html>

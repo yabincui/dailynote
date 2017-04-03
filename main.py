@@ -17,11 +17,27 @@ import webapp2
 import logging
 import os
 
+from google.appengine.ext import ndb
+
+from person import AddPersonFormPage, AddPersonPage, ListPersonPage
+from template import TemplatePage
+from login import LoginPage, AfterLoginPage
+
+
 class MainPage(webapp2.RequestHandler):
     def get(self):
         self.response.headers['Content-Type'] = 'text/html'
-        self.response.write('<p>Hello, World!</p>')
-        self.response.write("I am yabin cui!")
+        self.response.write("""
+        <html>
+            <body>
+                <h2>Hello, World<h2>
+                
+                <a href="/add_person_form">Add a person</a>
+                <a href="/list_person">List persons</a>
+            </body>
+        </html>
+        """)
+
 
 class TimeoutPage(webapp2.RequestHandler):
     def get(self):
@@ -61,4 +77,10 @@ app = webapp2.WSGIApplication([
     ('/timeout', TimeoutPage),
     ('/log', LogPage),
     ('/env', EnvPage),
+    ('/list_person', ListPersonPage),
+    ('/add_person_form', AddPersonFormPage),
+    ('/add_person', AddPersonPage),
+    ('/template', TemplatePage),
+    ('/login', LoginPage),
+    ('/after_login', AfterLoginPage),
 ], debug=True)
