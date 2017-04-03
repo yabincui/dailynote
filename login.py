@@ -38,6 +38,15 @@ def user_required(handler):
 
     return check_login
 
+def get_user():
+    return users.get_current_user()
+
+def get_user_email():
+    return get_user().email()
+
+def get_user_id():
+    return get_user().user_id()
+
 class AfterLoginPage(webapp2.RequestHandler):
     @user_required
     def get(self):

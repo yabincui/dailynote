@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title> Add Note </title>
+  </head>
+
+  <body>
+
+  <div class="content">
+  
+    <p> Dump Note: </p>
+    <p> Note id: {{ note_id }} </p>
+    <p> Date: {{ date_time }} </p>
+    <p> User id: {{ user_id }}, email: {{ user_email }} </p>
+    <p> State: {{ state }} </p>
+    <p> Priority: {{ priority }} </p>
+    <p> Title: {{ title }} </p>
+    <p> Task: {{ task }} </p>
+    <p> <a href="/change_note_form?note_id={{note_id}}"> Change Note </a> </p>
+    <p> <a href="/list_notes"> List notes </a> </p>
+
+  </div>
+
+
+  </body>
+</html>

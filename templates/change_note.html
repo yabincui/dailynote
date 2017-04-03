@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title> Change Note </title>
+  </head>
+
+  <body>
+
+  <div class="content">
+  
+    <p> Change Note: </p>
+  	<form action="/change_note?note_id={{ note_id }}" method="post">
+    	Title: <input type="text" name="title" value="{{ title }}"> <br>
+        Task: <textarea rows="4" cols="50" name="task"> {{ task }} </textarea> <br>
+        State: <input type="text" name="state" value="{{ state }}"> <br>
+        Priority: <input type="text" name="priority" value="{{ priority }}"> <br>
+        Parent task id: <input type="text" name="parent_task_id" value="{{ parent_task_id }}"> <br>
+        <input type="submit" value="Submit">
+    </form>
+
+  </div>
+
+
+  </body>
+</html>
