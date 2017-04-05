@@ -3,30 +3,94 @@
   <head>
     <meta charset="utf-8"/>
     <title> Add Note </title>
+
+    <style>
+ul {
+list-style-type: none;
+margin: 0;
+padding: 0;
+}
+li a {
+float:left;
+display: block;
+color: green;
+text-decoration: none;
+font-size: 30px;
+background-color: cyan;
+margin: 0px 10px 0px 10px;
+}
+
+li a:hover {
+background-color: yellow;
+}
+
+.clean {
+clear:both;
+}
+
+table { border:5px solid black; }
+tr, td { border:1px solid #777777; }
+td a{
+text-decoration: none;
+background-color: cyan;
+
+}
+td a:hover {
+background-color: yellow;
+}
+    </style>
   </head>
 
   <body>
 
+  <ul>
+    <li><a href="/add_note_form">Add Note</a></li>
+  </ul>
+  <div class="clean"></div>
+  <hr>
+
   <div class="content">
 
   	{% for note in note_values %}
-    <p> Date: {{ note['date_time'] }} </p>
-    <p> State: {{ note['state'] }} </p>
-    <p> Priority: {{ note['priority'] }} </p>
-    <p> Title: {{ note['title'] }} </p>
-    <p> Task: {{ note['task'] }} </p>
-    	{% if note['parent'] %}
-    	<p> Parent note: <a href="/dump_note?note_id={{note['parent'].note_id}}">
-    		{{ note['parent'].title }} </a></p>
-    	{% endif %}
-    <p> <a href="/change_note_form?note_id={{note['note_id']}}"> Change Note </a> </p>
-    <p> <a href="/add_note_form?parent_note_id={{note['note_id']}}"> Create Sub note </a> </p>
+    <table width="100%">
+      <tr>
+        <td>Date</td>
+        <td>{{ note['date_time'] }}</td>
+      </tr>
+      <tr>
+        <td>State</td>
+        <td>{{ note['state'] }}</td>
+      </tr>
+      <tr>
+        <td>Priority</td>
+        <td>{{ note['priority'] }}</td>
+      </tr>
+      <tr>
+        <td>Title</td>
+        <td>{{ note['title'] }}</td>
+      </tr>
+      <tr>
+        <td>Task</td>
+        <td>{{ note['task'] }}</td>
+      </tr>
+      {% if note['parent'] %}
+      <tr>
+        <td>Parent</td>
+        <td><a href="/dump_note?note_id={{note['parent'].note_id}}">{{ note['parent'].title }}</a></td>
+      </tr>
+      {% endif %}
+      <tr colspan="2">
+      <td>
+        <a href="/dump_note?note_id={{note['note_id']}}">Dump Note</a>
+        <a href="/change_note_form?note_id={{note['note_id']}}">Change Note</a>
+        <a href="/add_note_form?parent_note_id={{note['note_id']}}">Add Sub Note</a>
+      </td>
+      </tr>
+    </table>
     <br>
     {% endfor %}
-    <p><a href="/add_note_form">Add Note </a> </p>
 
   </div>
-
 
   </body>
 </html>

@@ -2,27 +2,76 @@
 <html lang="en">
   <head>
     <meta charset="utf-8"/>
-    <title> Add Note </title>
+    <title> Dump Note </title>
+    <style>
+ul {
+list-style-type: none;
+margin: 0;
+padding: 0;
+}
+li a {
+float:left;
+display: block;
+color: green;
+text-decoration: none;
+font-size: 30px;
+background-color: cyan;
+margin: 0px 10px 0px 10px;
+}
+
+li a:hover {
+background-color: yellow;
+}
+
+.clean {
+clear:both;
+}
+
+table { border:5px solid black; }
+tr, td { border:1px solid #777777; }
+    </style>
   </head>
 
   <body>
 
-  <div class="content">
+  <ul>
+    <li><a href="/list_notes">List Notes</a></li>
+    <li><a href="/change_note_form?note_id={{note_id}}">Change Note</a></li>
+    <li><a href="/add_note_form?parent_note_id={{note_id}}">Add Sub Note</a></p>
+    <li><a href="/add_note_form">Add Note</a></li>
+  </ul>
+  <div class="clean"></div>
+  <hr>
 
-    <p> Dump Note: </p>
-    <p> Note id: {{ note_id }} </p>
-    <p> Date: {{ date_time }} </p>
-    <p> State: {{ state }} </p>
-    <p> Priority: {{ priority }} </p>
-    <p> Title: {{ title }} </p>
-    <p> Task: {{ task }} </p>
-  	{% if parent %}
-    	<p> Parent note: <a href="/dump_note?note_id={{parent.note_id}}">
-	   		{{ parent.title }} </a></p>
-   	{% endif %}
-    <p> <a href="/change_note_form?note_id={{note_id}}"> Change Note </a> </p>
-    <p> <a href="/add_note_form?parent_note_id={{note_id}}"> Create Sub note </a> </p>
-    <p> <a href="/list_notes"> List notes </a> </p>
+    <table width="100%">
+      <tr>
+        <td>Date</td>
+        <td>{{ date_time }}</td>
+      </tr>
+      <tr>
+        <td>State</td>
+        <td>{{ state }}</td>
+      </tr>
+      <tr>
+        <td>Priority</td>
+        <td>{{ priority }}</td>
+      </tr>
+      <tr>
+        <td>Title</td>
+        <td>{{ title }}</td>
+      </tr>
+      <tr>
+        <td>Task</td>
+        <td>{{ task }}</td>
+      </tr>
+      {% if parent %}
+      <tr>
+        <td>Parent</td>
+        <td><a href="/dump_note?note_id={{parent.note_id}}">{{ parent.title }}</a></td>
+      </tr>
+      {% endif %}
+    </table>
+    <br>
 
   </div>
 

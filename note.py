@@ -73,7 +73,7 @@ class AddNotePage(webapp2.RequestHandler):
         task = self.request.get("task")
         parent_note_id = self.request.get("parent_note_id")
         logging.debug('Add Note Page, parent_note_id = %s' % parent_note_id)
-        
+
         note = Note(user_id=user_id, date_time=date_time,
                     state=state, priority=priority,
                     title=title, task=task,

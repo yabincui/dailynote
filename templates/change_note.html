@@ -6,11 +6,39 @@
     <style>
     	* { margin: 10px; }
       .content { text-align: center; font-size:30px;}
+ul {
+list-style-type: none;
+margin: 0;
+padding: 0;
+}
+li a {
+float:left;
+display: block;
+color: green;
+text-decoration: none;
+font-size: 30px;
+background-color: cyan;
+margin: 0px 10px 0px 10px;
+}
+
+li a:hover {
+background-color: yellow;
+}
+
+.clean {
+clear:both;
+}
     </style>
   </head>
 
   <body>
   <div class="content">
+  <ul>
+    <li><a href="/list_notes">List Notes</a></li>
+    <li><a href="/add_note_form">Add Note</a></li>
+  </ul>
+  <div class="clean"></div>
+  <hr>
     <h1>Change Note</h1>
   	<form action="/change_note?note_id={{ note_id }}" method="post">
       Title:

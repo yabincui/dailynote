@@ -29,7 +29,8 @@ from note import AddNoteFormPage, AddNotePage, DumpNotePage, \
 
 class MainPage(webapp2.RequestHandler):
     def get(self):
-        self.response.write(load_template('main.html'))
+        #self.response.write(load_template('main.html'))
+        return self.redirect("/list_notes")
 
 
 class TimeoutPage(webapp2.RequestHandler):
@@ -50,12 +51,12 @@ class LogPage(webapp2.RequestHandler):
         logging.warning('This is a warning message')
         logging.error('This is an error message')
         logging.critical('This is a critical message')
-        
+
         try:
             raise ValueError('This is a sample value error.')
         except ValueError:
             logging.exception('An example exception log.')
-        
+
         self.response.out.write('Logging example.')
 
 class EnvPage(webapp2.RequestHandler):

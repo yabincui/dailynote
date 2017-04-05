@@ -6,10 +6,38 @@
     <style>
     	* { margin: 10px; }
       .content { text-align: center; font-size:30px;}
+ul {
+list-style-type: none;
+margin: 0;
+padding: 0;
+}
+li a {
+float:left;
+display: block;
+color: green;
+text-decoration: none;
+font-size: 30px;
+background-color: cyan;
+margin: 0px 10px 0px 10px;
+}
+
+li a:hover {
+background-color: yellow;
+}
+
+.clean {
+clear:both;
+}
     </style>
   </head>
 
   <body>
+
+  <ul>
+    <li><a href="/list_notes">List Notes</a></li>
+  </ul>
+  <div class="clean"></div>
+  <hr>
 
   <div class="content">
     <h1>Add Note</h1>
