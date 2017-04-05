@@ -79,8 +79,8 @@ background-color: yellow;
         <td><a href="/dump_note?note_id={{note['parent'].note_id}}">{{ note['parent'].title }}</a></td>
       </tr>
       {% endif %}
-      <tr colspan="2">
-      <td>
+      <tr>
+      <td colspan="2">
         <a href="/dump_note?note_id={{note['note_id']}}">Dump Note</a>
         <a href="/change_note_form?note_id={{note['note_id']}}">Change Note</a>
         <a href="/add_note_form?parent_note_id={{note['note_id']}}">Add Sub Note</a>
