@@ -3,36 +3,19 @@
   <head>
     <meta charset="utf-8"/>
     <title> Change Note </title>
-    <style>
-    	* { margin: 10px; }
-      .content { text-align: center; font-size:30px;}
-ul {
-list-style-type: none;
-margin: 0;
-padding: 0;
+    <link type="text/css" rel="stylesheet" href="/css/bootstrap.css">
+<style>
+* {
+  margin: 10px;
 }
-li a {
-float:left;
-display: block;
-color: green;
-text-decoration: none;
-font-size: 30px;
-background-color: cyan;
-margin: 0px 10px 0px 10px;
-}
-
-li a:hover {
-background-color: yellow;
-}
-
-.clean {
-clear:both;
+#content {
+  text-align: center;
 }
     </style>
   </head>
 
   <body>
-  <div class="content">
+  <div id="content">
   <ul>
     <li><a href="/list_notes">List Notes</a></li>
     <li><a href="/add_note_form">Add Note</a></li>
@@ -46,7 +29,7 @@ clear:both;
       Task<br>
       <textarea rows="20" cols="100" name="task" font-size:20px>{{ task }}</textarea> <br>
       <span font-size:30px>State</span>
-        <select name="state" style="font-size:30px;">
+        <select name="state">
           {% if priority == "TODO" %}
           <option value="TODO" selected>TODO</option>
           {% else %}
@@ -61,7 +44,7 @@ clear:both;
 
         </select> <br>
       <span font-size:30px>Priority</span>
-        <select name="priority" style="font-size:30px;">
+        <select name="priority">
           {% if priority == "P1" %}
           <option value="P1" selected>P1</option>
           {% else %}
@@ -90,7 +73,7 @@ clear:both;
         Parent note id: <input type="text" name="parent_note_id" value="{{ parent_note_id }}" readonly>
         {% endif %}
         <br>
-        <input type="submit" value="Submit" style="font-size:30px;">
+        <input type="submit" value="Submit" class="submit">
     </form>
   </div>
 

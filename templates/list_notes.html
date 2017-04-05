@@ -3,42 +3,9 @@
   <head>
     <meta charset="utf-8"/>
     <title> Add Note </title>
-
-    <style>
-ul {
-list-style-type: none;
-margin: 0;
-padding: 0;
-}
-li a {
-float:left;
-display: block;
-color: green;
-text-decoration: none;
-font-size: 30px;
-background-color: cyan;
-margin: 0px 10px 0px 10px;
-}
-
-li a:hover {
-background-color: yellow;
-}
-
-.clean {
-clear:both;
-}
-
-table { border:5px solid black; }
-tr, td { border:1px solid #777777; }
-td a{
-text-decoration: none;
-background-color: cyan;
-
-}
-td a:hover {
-background-color: yellow;
-}
-    </style>
+    <link type="text/css" rel="stylesheet" href="/css/bootstrap.css">
+<style>
+</style>
   </head>
 
   <body>
@@ -52,7 +19,7 @@ background-color: yellow;
   <div class="content">
 
   	{% for note in note_values %}
-    <table width="100%">
+    <table width="80%" align="left">
       <tr>
         <td>Date</td>
         <td>{{ note['date_time'] }}</td>
