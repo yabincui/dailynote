@@ -3,19 +3,33 @@
   <head>
     <meta charset="utf-8"/>
     <title> Add Note </title>
+    <style>
+    	* { margin: 10px; }
+      .content { text-align: center; font-size:30px;}
+    </style>
   </head>
 
   <body>
 
   <div class="content">
-  
-    <p> Add Note: </p>
+    <h1>Add Note</h1>
   	<form action="/add_note" method="post">
-    	Title: <input type="text" name="title"> <br>
-        Task: <textarea rows="4" cols="50" name="task"> </textarea> <br>
-        Priority: <input type="text" name="priority" value="p4"> <br>
-        Parent note id: <input type="text" name="parent_note_id" value="{{ parent_note_id }}"> <br>
-        <input type="submit" value="Submit">
+      Title:
+    	<input style="font-weight: bold;font-size:30px;text-align:center;" type="text" name="title" size="30"> <br>
+      Task<br>
+      <textarea rows="20" cols="100" name="task"> </textarea> <br>
+      <span font-size:30px>Priority</span>
+        <select name="priority" style="font-size:30px;">
+          <option value="P1">P1</option>
+          <option value="P2">P2</option>
+          <option value="P3">P3</option>
+          <option value="P4" selected>P4</option>
+        </select> <br>
+        {% if parent_note_id %}
+        Parent note id: <input type="text" name="parent_note_id" value="{{ parent_note_id }}" readonly>
+        {% endif %}
+        <br>
+        <input type="submit" value="Submit" style="font-size:30px;">
     </form>
 
   </div>

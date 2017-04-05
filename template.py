@@ -17,7 +17,7 @@ def load_template(filename, template_values = None):
     if not template_values:
         template_values = {}
     template = JINJA_ENVIRONMENT.get_template(filename)
-    return template.render(template_values)
+    return template.render(template_values).encode('utf-8')
 
 class TemplatePage(webapp2.RequestHandler):
     def get(self):

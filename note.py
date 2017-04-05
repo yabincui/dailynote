@@ -129,8 +129,8 @@ class ListNotesPage(webapp2.RequestHandler):
             value['user_email'] = get_user_email()
             value['date_time'] = formatTime(note.date_time)
             value['state'] = note.state
-            value['priority'] = note.priority,
-            value['title'] = note.title,
+            value['priority'] = note.priority
+            value['title'] = note.title
             value['task'] = note.task
             if note.parent_note_id:
                 note_key = ndb.Key(urlsafe=note.parent_note_id)
@@ -143,7 +143,7 @@ class ListNotesPage(webapp2.RequestHandler):
             'note_values' : note_values,
         }
         self.response.write(load_template('list_notes.html', template_values))
-    
+
 class ChangeNoteFormPage(webapp2.RequestHandler):
     @user_required
     def get(self):
@@ -163,8 +163,9 @@ class ChangeNoteFormPage(webapp2.RequestHandler):
             'title' : note.title,
             'task' : note.task,
         }
+        logging.info("priority is %s" % note.priority)
         self.response.write(load_template('change_note.html', template_values))
-        
+
 class ChangeNotePage(webapp2.RequestHandler):
     @user_required
     def post(self):
@@ -180,4 +181,4 @@ class ChangeNotePage(webapp2.RequestHandler):
         note.priority = self.request.get('priority', note.priority)
         note.put()
         return self.redirect('/dump_note?note_id=%s' % note.note_id)
-        
+

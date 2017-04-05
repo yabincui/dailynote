@@ -3,24 +3,68 @@
   <head>
     <meta charset="utf-8"/>
     <title> Change Note </title>
+    <style>
+    	* { margin: 10px; }
+      .content { text-align: center; font-size:30px;}
+    </style>
   </head>
 
   <body>
-
   <div class="content">
-  
-    <p> Change Note: </p>
+    <h1>Change Note</h1>
   	<form action="/change_note?note_id={{ note_id }}" method="post">
-    	Title: <input type="text" name="title" value="{{ title }}"> <br>
-        Task: <textarea rows="4" cols="50" name="task"> {{ task }} </textarea> <br>
-        State: <input type="text" name="state" value="{{ state }}"> <br>
-        Priority: <input type="text" name="priority" value="{{ priority }}"> <br>
-        Parent note id: <input type="text" name="parent_note_id" value="{{ parent_task_id }}"> <br>
-        <input type="submit" value="Submit">
+      Title:
+      <input style="font-weight: bold;font-size:30px;text-align:center;" type="text" name="title" value="{{ title }}" size="30"> <br>
+      Task<br>
+      <textarea rows="20" cols="100" name="task" font-size:20px>{{ task }}</textarea> <br>
+      <span font-size:30px>State</span>
+        <select name="state" style="font-size:30px;">
+          {% if priority == "TODO" %}
+          <option value="TODO" selected>TODO</option>
+          {% else %}
+          <option value="TODO">TODO</option>
+          {% endif %}
+
+          {% if priority == "DONE" %}
+          <option value="DONE" selected>DONE</option>
+          {% else %}
+          <option value="DONE">DONE</option>
+          {% endif %}
+
+        </select> <br>
+      <span font-size:30px>Priority</span>
+        <select name="priority" style="font-size:30px;">
+          {% if priority == "P1" %}
+          <option value="P1" selected>P1</option>
+          {% else %}
+          <option value="P1">P1</option>
+          {% endif %}
+
+          {% if priority == "P2" %}
+          <option value="P2" selected>P2</option>
+          {% else %}
+          <option value="P2">P2</option>
+          {% endif %}
+
+          {% if priority == "P3" %}
+          <option value="P3" selected>P3</option>
+          {% else %}
+          <option value="P3">P3</option>
+          {% endif %}
+
+          {% if priority == "P4" %}
+          <option value="P4" selected>P4</option>
+          {% else %}
+          <option value="P4">P4</option>
+          {% endif %}
+        </select> <br>
+        {% if parent_note_id %}
+        Parent note id: <input type="text" name="parent_note_id" value="{{ parent_note_id }}" readonly>
+        {% endif %}
+        <br>
+        <input type="submit" value="Submit" style="font-size:30px;">
     </form>
-
   </div>
-
 
   </body>
 </html>
