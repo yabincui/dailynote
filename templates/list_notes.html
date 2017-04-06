@@ -34,11 +34,11 @@
       </tr>
       <tr>
         <td>Title</td>
-        <td>{{ note['title'] }}</td>
+        <td class="title" style="text-align:left">{{ note['title'] }}</td>
       </tr>
       <tr>
         <td>Task</td>
-        <td>{{ note['task'] }}</td>
+        <td><pre class="task">{{ note['task'] }}</pre></td>
       </tr>
       {% if note['parent'] %}
       <tr>

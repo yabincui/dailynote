@@ -25,9 +25,9 @@
     <h1>Change Note</h1>
   	<form action="/change_note?note_id={{ note_id }}" method="post">
       Title:
-      <input style="font-weight: bold;font-size:30px;text-align:center;" type="text" name="title" value="{{ title }}" size="30"> <br>
+      <input class="title" type="text" name="title" value="{{ title }}" size="30"> <br>
       Task<br>
-      <textarea rows="20" cols="100" name="task" font-size:20px>{{ task }}</textarea> <br>
+      <textarea rows="20" cols="80" name="task" class="task">{{ task }}</textarea> <br>
       <span font-size:30px>State</span>
         <select name="state">
           {% if priority == "TODO" %}
