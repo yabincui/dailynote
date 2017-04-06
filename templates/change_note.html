@@ -17,18 +17,30 @@
   <body>
   <div id="content">
   <ul>
+    <li><span class="li_menu">Change Note</span></li>
+    <li><a href="dump_note?note_id={{ note_id }}">Dump Note</a></li>
     <li><a href="list_notes">List Notes</a></li>
     <li><a href="add_note_form">Add Note</a></li>
   </ul>
   <div class="clean"></div>
   <hr>
-    <h1>Change Note</h1>
   	<form action="change_note?note_id={{ note_id }}" method="post">
-      Title:
-      <input class="title" type="text" name="title" value="{{ title }}" size="30"> <br>
-      Task<br>
-      <textarea rows="20" cols="80" name="task" class="task">{{ task }}</textarea> <br>
-      <span font-size:30px>State</span>
+      <table>
+        <tr>
+          <td>Title</td>
+          <td><input class="title" type="text" name="title" size="30" value="{{ title }}"></td>
+        </tr>
+        <tr>
+          <td>Task</td>
+          <td><textarea rows="20" cols="60" name="task" class="task">{{ task }}</textarea></td>
+        </tr>
+        <tr>
+          <td>Tag</td>
+          <td><input class="title" type="text" name="tag" size="30" value="{{ tag }}"></td>
+        </tr>
+        <tr>
+          <td>State</td>
+          <td>
         <select name="state">
           {% if priority == "TODO" %}
           <option value="TODO" selected>TODO</option>
@@ -41,9 +53,12 @@
           {% else %}
           <option value="DONE">DONE</option>
           {% endif %}
-
-        </select> <br>
-      <span font-size:30px>Priority</span>
+        </select>
+          </td>
+        </tr>
+        <tr>
+          <td>Priority</td>
+          <td>
         <select name="priority">
           {% if priority == "P1" %}
           <option value="P1" selected>P1</option>
@@ -68,12 +83,21 @@
           {% else %}
           <option value="P4">P4</option>
           {% endif %}
-        </select> <br>
+        </select>
+          </td>
+        </tr>
         {% if parent_note_id %}
-        Parent note id: <input type="text" name="parent_note_id" value="{{ parent_note_id }}" readonly>
+        <tr>
+          <td>Parent</td>
+          <td><input type="text" name="parent_note_id" value="{{ parent_note_id }}" readonly></td>
+        </tr>
         {% endif %}
-        <br>
+        <tr>
+          <td colspan="2">
         <input type="submit" value="Submit" class="submit">
+          </td>
+        </tr>
+      </table>
     </form>
   </div>
 

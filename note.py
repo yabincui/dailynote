@@ -50,7 +50,7 @@ class Note(ndb.Model):
     title = ndb.StringProperty()
     task = ndb.StringProperty()
     parent_note_id = ndb.StringProperty()
-
+    tag = ndb.StringProperty()
 
 class AddNoteFormPage(webapp2.RequestHandler):
     @user_required
@@ -71,13 +71,15 @@ class AddNotePage(webapp2.RequestHandler):
         priority = self.request.get("priority", "p4")
         title = self.request.get("title")
         task = self.request.get("task")
+        tag = self.request.get("tag")
         parent_note_id = self.request.get("parent_note_id")
         logging.debug('Add Note Page, parent_note_id = %s' % parent_note_id)
 
         note = Note(user_id=user_id, date_time=date_time,
                     state=state, priority=priority,
                     title=title, task=task,
-                    parent_note_id=parent_note_id)
+                    parent_note_id=parent_note_id,
+                    tag=tag)
         note_key = note.put()
         note = note_key.get()
         note.note_id = note_key.urlsafe()
@@ -107,6 +109,7 @@ class DumpNotePage(webapp2.RequestHandler):
             'priority' : note.priority,
             'title' : note.title,
             'task' : note.task,
+            'tag' : note.tag,
         }
         logging.debug('Dump Note Page, parent_note_id = %s' % note.parent_note_id)
         if note.parent_note_id:
@@ -122,8 +125,16 @@ class ListNotesPage(webapp2.RequestHandler):
     def get(self):
         user_id = get_user_id()
         notes = Note.query(Note.user_id == user_id).fetch()
+        need_tag = self.request.get('tag', 'ALL')
         note_values = []
+        tag_values = set()
         for note in notes:
+            tag_values.add(note.tag if note.tag else 'DEFAULT')
+            if need_tag != 'ALL':
+                if need_tag == 'DEFAULT' and not note.tag:
+                    pass
+                elif need_tag != note.tag:
+                    continue
             value = {}
             value['note_id'] = str(note.note_id)
             value['user_id'] = note.user_id
@@ -133,6 +144,7 @@ class ListNotesPage(webapp2.RequestHandler):
             value['priority'] = note.priority
             value['title'] = note.title
             value['task'] = note.task
+            value['tag'] = note.tag
             if note.parent_note_id:
                 note_key = ndb.Key(urlsafe=note.parent_note_id)
                 parent_note = note_key.get()
@@ -141,7 +153,9 @@ class ListNotesPage(webapp2.RequestHandler):
                 value['parent'] = None
             note_values.append(value)
         template_values = {
+            'tag_values' : tag_values,
             'note_values' : note_values,
+            'need_tag' : need_tag,
         }
         self.response.write(load_template('list_notes.html', template_values))
 
@@ -163,6 +177,7 @@ class ChangeNoteFormPage(webapp2.RequestHandler):
             'priority' : note.priority,
             'title' : note.title,
             'task' : note.task,
+            'tag' : note.tag,
         }
         logging.info("priority is %s" % note.priority)
         self.response.write(load_template('change_note.html', template_values))
@@ -176,10 +191,11 @@ class ChangeNotePage(webapp2.RequestHandler):
         if note.user_id != get_user_id():
             self.response.write("note doesn't belong to current user!")
             return
-        note.title = self.request.get('title', note.title)
-        note.task = self.request.get('task', note.task)
-        note.state = self.request.get('state', note.state)
-        note.priority = self.request.get('priority', note.priority)
+        note.title = self.request.get('title')
+        note.task = self.request.get('task')
+        note.state = self.request.get('state')
+        note.priority = self.request.get('priority')
+        note.tag = self.request.get('tag')
         note.put()
         return self.redirect('dump_note?note_id=%s' % str(note.note_id))
 

@@ -11,6 +11,7 @@
   <body>
 
   <ul>
+    <li><span class="li_menu">Dump Note</span></li>
     <li><a href="list_notes">List Notes</a></li>
     <li><a href="change_note_form?note_id={{note_id}}">Change Note</a></li>
     <li><a href="add_note_form?parent_note_id={{note_id}}">Add Sub Note</a></p>
@@ -40,6 +41,10 @@
       <tr>
         <td>Task</td>
         <td><pre class="task">{{ task }}</pre></td>
+      </tr>
+      <tr>
+        <td>Tag</td>
+        <td>{{ tag }}</td>
       </tr>
       {% if parent %}
       <tr>

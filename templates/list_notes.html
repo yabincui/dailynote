@@ -11,12 +11,28 @@
   <body>
 
   <ul>
+    <li><span class="li_menu">List Notes</span></li>
     <li><a href="add_note_form">Add Note</a></li>
   </ul>
   <div class="clean"></div>
   <hr>
 
   <div class="content">
+    <ul style="font-size:15px;">
+      {% if need_tag == 'ALL' %}
+      <li><span class="li_menu">All tags</span></li>
+      {% else %}
+      <li><a href="list_notes">All tags</a></li>
+      {% endif %}
+    {% for tag in tag_values %}
+      {% if need_tag == tag %}
+      <li><span class="li_menu">{{ tag }}</span></li>
+      {% else %}
+      <li><a href="list_notes?tag={{ tag }}">{{ tag }}</a></li>
+      {% endif %}
+    {% endfor %}
+    </ul>
+    <hr>
 
   	{% for note in note_values %}
     <table width="80%" align="left">
@@ -40,6 +56,12 @@
         <td>Task</td>
         <td><pre class="task">{{ note['task'] }}</pre></td>
       </tr>
+      {% if note['tag'] %}
+      <tr>
+        <td>Tag</td>
+        <td>{{ note['tag'] }}</td>
+      </tr>
+      {% endif %}
       {% if note['parent'] %}
       <tr>
         <td>Parent</td>

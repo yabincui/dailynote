@@ -17,30 +17,50 @@
   <body>
 
   <ul>
+    <li><span class="li_menu">Add Note</span></li>
     <li><a href="list_notes">List Notes</a></li>
   </ul>
   <div class="clean"></div>
   <hr>
 
   <div id="content">
-    <h1>Add Note</h1>
   	<form action="add_note" method="post">
-      Title:
-      <input class="title" type="text" name="title" size="30"> <br>
-      Task<br>
-      <textarea rows="20" cols="80" name="task" class="task"></textarea> <br>
-      <span font-size:30px>Priority</span>
+      <table>
+        <tr>
+          <td>Title</td>
+          <td><input class="title" type="text" name="title" size="30"></td>
+        </tr>
+        <tr>
+          <td>Task</td>
+          <td><textarea rows="20" cols="60" name="task" class="task"></textarea></td>
+        </tr>
+        <tr>
+          <td>Tag</td>
+          <td><input class="title" type="text" name="tag" size="30"></td>
+        </tr>
+        <tr>
+          <td>Priority</td>
+          <td>
         <select name="priority" style="font-size:20px;background-color:#b2dcf5;color:white;">
           <option value="P1">P1</option>
           <option value="P2">P2</option>
           <option value="P3">P3</option>
           <option value="P4" selected>P4</option>
-        </select> <br>
+        </select>
+          </td>
+        </tr>
         {% if parent_note_id %}
-        Parent note id: <input type="text" name="parent_note_id" value="{{ parent_note_id }}" readonly>
+        <tr>
+          <td>Parent</td>
+          <td><input type="text" name="parent_note_id" value="{{ parent_note_id }}" readonly></td>
+        </tr>
         {% endif %}
-        <br>
+        <tr>
+          <td colspan="2">
         <input type="submit" value="Submit" class="submit">
+          </td>
+        </tr>
+      </table>
     </form>
   </div>
 
