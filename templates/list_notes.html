@@ -11,7 +11,7 @@
   <body>
 
   <ul>
-    <li><a href="/add_note_form">Add Note</a></li>
+    <li><a href="add_note_form">Add Note</a></li>
   </ul>
   <div class="clean"></div>
   <hr>
@@ -43,14 +43,15 @@
       {% if note['parent'] %}
       <tr>
         <td>Parent</td>
-        <td><a href="/dump_note?note_id={{note['parent'].note_id}}">{{ note['parent'].title }}</a></td>
+        <td><a href="dump_note?note_id={{note['parent'].note_id}}">{{ note['parent'].title }}</a></td>
       </tr>
       {% endif %}
       <tr>
       <td colspan="2">
-        <a href="/dump_note?note_id={{note['note_id']}}">Dump Note</a>
-        <a href="/change_note_form?note_id={{note['note_id']}}">Change Note</a>
-        <a href="/add_note_form?parent_note_id={{note['note_id']}}">Add Sub Note</a>
+        <a href="dump_note?note_id={{note['note_id']}}">Dump Note</a>
+        <a href="change_note_form?note_id={{note['note_id']}}">Change Note</a>
+        <a href="add_note_form?parent_note_id={{note['note_id']}}">Add Sub Note</a>
+        <a href="delete_note?note_id={{note['note_id']}}">Delete Note</a>
       </td>
       </tr>
     </table>

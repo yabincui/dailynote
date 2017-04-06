@@ -82,7 +82,8 @@ class AddNotePage(webapp2.RequestHandler):
         note = note_key.get()
         note.note_id = note_key.urlsafe()
         note.put()
-        return self.redirect('/dump_note?note_id=%s' % note.note_id)
+        logging.info("type(note.note_id) = %s", note.note_id)
+        return self.redirect('dump_note?note_id=%s' % str(note.note_id))
 
 def formatTime(date_time):
     a = date_time.replace(tzinfo=pytz.utc).astimezone(pytz.timezone('America/Los_Angeles'))
@@ -124,7 +125,7 @@ class ListNotesPage(webapp2.RequestHandler):
         note_values = []
         for note in notes:
             value = {}
-            value['note_id'] = note.note_id
+            value['note_id'] = str(note.note_id)
             value['user_id'] = note.user_id
             value['user_email'] = get_user_email()
             value['date_time'] = formatTime(note.date_time)
@@ -180,5 +181,16 @@ class ChangeNotePage(webapp2.RequestHandler):
         note.state = self.request.get('state', note.state)
         note.priority = self.request.get('priority', note.priority)
         note.put()
-        return self.redirect('/dump_note?note_id=%s' % note.note_id)
+        return self.redirect('dump_note?note_id=%s' % str(note.note_id))
 
+class DeleteNotePage(webapp2.RequestHandler):
+    @user_required
+    def get(self):
+        note_id = self.request.get('note_id')
+        note_key = ndb.Key(urlsafe=note_id)
+        note = note_key.get()
+        if note.user_id != get_user_id():
+            self.response.write("note doesn't belong to current user!")
+            return
+        note_key.delete()
+        self.response.write(load_template('delete_note.html'))

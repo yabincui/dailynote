@@ -23,7 +23,8 @@ from person import AddPersonFormPage, AddPersonPage, ListPersonPage
 from template import TemplatePage, load_template
 from login import LoginPage, AfterLoginPage
 from note import AddNoteFormPage, AddNotePage, DumpNotePage, \
-    ListNotesPage, ChangeNoteFormPage, ChangeNotePage
+    ListNotesPage, ChangeNoteFormPage, ChangeNotePage, \
+    DeleteNotePage
 
 
 
@@ -83,4 +84,5 @@ app = webapp2.WSGIApplication([
     ('/list_notes', ListNotesPage),
     ('/change_note_form', ChangeNoteFormPage),
     ('/change_note', ChangeNotePage),
+    ('/delete_note', DeleteNotePage),
 ], debug=True)
