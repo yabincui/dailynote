@@ -66,6 +66,10 @@ background-color:#b2dcf5;
 color:white;
 }
 
+pre {
+white-space: pre-wrap;
+}
+
 .submit {
 font-size:30px;
 background-color:#b2dcf5;
