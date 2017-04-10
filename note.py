@@ -48,7 +48,7 @@ class Note(ndb.Model):
     state = ndb.StringProperty()
     priority = ndb.StringProperty()
     title = ndb.StringProperty()
-    task = ndb.StringProperty()
+    task = ndb.TextProperty()
     parent_note_id = ndb.StringProperty()
     tag = ndb.StringProperty()
 
