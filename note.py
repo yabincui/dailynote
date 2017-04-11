@@ -119,6 +119,25 @@ class NoteManager(object):
         """Return all notes in a list."""
         user_id = get_user_id()
         notes = Note.query(Note.user_id == user_id).fetch()
+        # Update note.children_parent_ids to update notes created before adding this field.
+        for note in notes:
+            parent = NoteManager.getParent(note)
+            if parent:
+                children_ids = parent.getChildrenNoteIds()
+                if not note.note_id in children_ids:
+                    parent.addChildNote(note)
+                    parent.put()
+
+        # Sort notes based on state, priority and timestamp.
+        def comp(a, b):
+            if a.state.upper() != b.state.upper():
+                return -1 if a.state.upper() == 'TODO' else 1
+            elif a.priority.upper() != b.priority.upper():
+                return -1 if a.priority.upper() < b.priority.upper() else 1
+            elif a.date_time != b.date_time:
+                return -1 if a.date_time < b.date_time else 1
+            return 0
+        notes.sort(cmp=comp)
         return notes
 
     @staticmethod
