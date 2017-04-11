@@ -52,6 +52,16 @@
         <td><a href="dump_note?note_id={{parent.note_id}}">{{ parent.title }}</a></td>
       </tr>
       {% endif %}
+      {% if children %}
+      <tr>
+        <td>Children</td>
+        <td>
+          {% for child in children %}
+            <a href="dump_note?note_id={{child.note_id}}">{{ child.title }}</a>
+          {% endfor %}
+        </td>
+      </tr>
+      {% endif %}
     </table>
     <br>
 

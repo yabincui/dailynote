@@ -51,6 +51,94 @@ class Note(ndb.Model):
     task = ndb.TextProperty()
     parent_note_id = ndb.StringProperty()
     tag = ndb.StringProperty()
+    children_note_ids = ndb.StringProperty()
+
+    def addChildNote(self, child_note):
+        if self.children_note_ids:
+            self.children_note_ids += ':' + child_note.note_id
+        else:
+            self.children_note_ids = child_note.note_id
+
+    def removeChildNote(self, child_note):
+        children = self.children_note_ids.split(':')
+        children.remove(child_note.note_id)
+        if children:
+            self.children_note_ids = ':'.join(children)
+        else:
+            self.children_note_ids = ''
+
+    def getChildrenNoteIds(self):
+        if not self.children_note_ids:
+            return []
+        children = self.children_note_ids.split(':')
+        return children
+
+class NoteManager(object):
+    @staticmethod
+    def createNote(user_id, priority, title, task, parent_note_id, tag):
+        """Create a new Note, return the created note."""
+        date_time = datetime.datetime.utcnow()
+        state = "TODO"
+        note = Note(user_id=user_id, date_time=date_time,
+                    state=state, priority=priority,
+                    title=title, task=task,
+                    parent_note_id=parent_note_id,
+                    tag=tag)
+        note_key = note.put()
+        note = note_key.get()
+        note.note_id = note_key.urlsafe()
+        note.put()
+        if parent_note_id:
+            parent_note = NoteManager.getNote(parent_note_id)
+            parent_note.addChildNote(note)
+            parent_note.put()
+        return note
+
+    @staticmethod
+    def getNote(note_id):
+        note_key = ndb.Key(urlsafe=note_id)
+        note = note_key.get()
+        return note
+
+    @staticmethod
+    def getParent(note):
+        if not note.parent_note_id:
+            return None
+        return NoteManager.getNote(note.parent_note_id)
+
+    @staticmethod
+    def getChildren(note):
+        children_ids = note.getChildrenNoteIds()
+        children = []
+        for child in children_ids:
+            children.append(NoteManager.getNote(child))
+        return children
+
+    @staticmethod
+    def getNotes():
+        """Return all notes in a list."""
+        user_id = get_user_id()
+        notes = Note.query(Note.user_id == user_id).fetch()
+        return notes
+
+    @staticmethod
+    def updateNote(note):
+        note.put()
+
+    @staticmethod
+    def removeNote(note):
+        """Remove a note and all its children notes."""
+        parent = NoteManager.getParent(note)
+        if parent:
+            parent.removeChildNote(note)
+            parent.put()
+        children = NoteManager.getChildren(note)
+        for child in children:
+            NoteManager.removeNote(child)
+        note_key = ndb.Key(urlsafe=note.note_id)
+        note_key.delete()
+        pass
+
 
 class AddNoteFormPage(webapp2.RequestHandler):
     @user_required
@@ -66,25 +154,13 @@ class AddNotePage(webapp2.RequestHandler):
     @user_required
     def post(self):
         user_id = get_user_id()
-        date_time = datetime.datetime.utcnow()
-        state = "TODO"
         priority = self.request.get("priority", "p4")
         title = self.request.get("title")
         task = self.request.get("task")
         tag = self.request.get("tag")
         parent_note_id = self.request.get("parent_note_id")
         logging.debug('Add Note Page, parent_note_id = %s' % parent_note_id)
-
-        note = Note(user_id=user_id, date_time=date_time,
-                    state=state, priority=priority,
-                    title=title, task=task,
-                    parent_note_id=parent_note_id,
-                    tag=tag)
-        note_key = note.put()
-        note = note_key.get()
-        note.note_id = note_key.urlsafe()
-        note.put()
-        logging.info("type(note.note_id) = %s", note.note_id)
+        note = NoteManager.createNote(user_id, priority, title, task, parent_note_id, tag)
         return self.redirect('dump_note?note_id=%s' % str(note.note_id))
 
 def formatTime(date_time):
@@ -95,8 +171,7 @@ class DumpNotePage(webapp2.RequestHandler):
     @user_required
     def get(self):
         note_id = self.request.get('note_id')
-        note_key = ndb.Key(urlsafe=note_id)
-        note = note_key.get()
+        note = NoteManager.getNote(note_id)
         if note.user_id != get_user_id():
             self.response.write("note doesn't belong to current user!")
             return
@@ -112,23 +187,17 @@ class DumpNotePage(webapp2.RequestHandler):
             'tag' : note.tag,
         }
         logging.debug('Dump Note Page, parent_note_id = %s' % note.parent_note_id)
-        if note.parent_note_id:
-            note_key = ndb.Key(urlsafe=note.parent_note_id)
-            parent_note = note_key.get()
-            template_values['parent'] = parent_note
-        else:
-            template_values['parent'] = None
+        template_values['parent'] = NoteManager.getParent(note)
+        template_values['children'] = NoteManager.getChildren(note)
         self.response.write(load_template('dump_note.html', template_values))
 
 class ListNotesPage(webapp2.RequestHandler):
     @user_required
     def get(self):
-        user_id = get_user_id()
-        notes = Note.query(Note.user_id == user_id).fetch()
         need_tag = self.request.get('tag', 'ALL')
         note_values = []
         tag_values = set()
-        for note in notes:
+        for note in NoteManager.getNotes():
             tag_values.add(note.tag if note.tag else 'DEFAULT')
             if need_tag != 'ALL':
                 if need_tag == 'DEFAULT' and not note.tag:
@@ -145,12 +214,8 @@ class ListNotesPage(webapp2.RequestHandler):
             value['title'] = note.title
             value['task'] = note.task
             value['tag'] = note.tag
-            if note.parent_note_id:
-                note_key = ndb.Key(urlsafe=note.parent_note_id)
-                parent_note = note_key.get()
-                value['parent'] = parent_note
-            else:
-                value['parent'] = None
+            value['parent'] = NoteManager.getParent(note)
+            value['children'] = NoteManager.getChildren(note)
             note_values.append(value)
         template_values = {
             'tag_values' : tag_values,
@@ -163,8 +228,7 @@ class ChangeNoteFormPage(webapp2.RequestHandler):
     @user_required
     def get(self):
         note_id = self.request.get('note_id')
-        note_key = ndb.Key(urlsafe=note_id)
-        note = note_key.get()
+        note = NoteManager.getNote(note_id)
         if note.user_id != get_user_id():
             self.response.write("note doesn't belong to current user!")
             return
@@ -186,8 +250,7 @@ class ChangeNotePage(webapp2.RequestHandler):
     @user_required
     def post(self):
         note_id = self.request.get('note_id')
-        note_key = ndb.Key(urlsafe=note_id)
-        note = note_key.get()
+        note = NoteManager.getNote(note_id)
         if note.user_id != get_user_id():
             self.response.write("note doesn't belong to current user!")
             return
@@ -196,17 +259,16 @@ class ChangeNotePage(webapp2.RequestHandler):
         note.state = self.request.get('state')
         note.priority = self.request.get('priority')
         note.tag = self.request.get('tag')
-        note.put()
+        NoteManager.updateNote(note)
         return self.redirect('dump_note?note_id=%s' % str(note.note_id))
 
 class DeleteNotePage(webapp2.RequestHandler):
     @user_required
     def get(self):
         note_id = self.request.get('note_id')
-        note_key = ndb.Key(urlsafe=note_id)
-        note = note_key.get()
+        note = NoteManager.getNote(note_id)
         if note.user_id != get_user_id():
             self.response.write("note doesn't belong to current user!")
             return
-        note_key.delete()
+        NoteManager.removeNote(note)
         self.response.write(load_template('delete_note.html'))
