@@ -47,6 +47,9 @@ def get_user_email():
 def get_user_id():
     return get_user().user_id()
 
+def is_admin():
+    return get_user_email() == 'splintcoder@gmail.com'
+
 class AfterLoginPage(webapp2.RequestHandler):
     @user_required
     def get(self):

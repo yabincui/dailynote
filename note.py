@@ -1,5 +1,3 @@
-# Copyright 2016 Google Inc.
-#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -30,15 +28,16 @@ note.py  use datastore to store daily note.
 """
 
 import datetime
-import time
-import webapp2
+import json
 import logging
 import os
+import time
+import webapp2
 from pytz.gae import pytz
 
 from google.appengine.ext import ndb
 
-from login import user_required, get_user_email, get_user_id
+from login import user_required, get_user_email, get_user_id, is_admin
 from template import load_template
 
 class Note(ndb.Model):
@@ -73,17 +72,33 @@ class Note(ndb.Model):
         children = self.children_note_ids.split(':')
         return children
 
+    def toString(self):
+        return json.dumps({
+                'note_id' : self.note_id,
+                'user_id' : self.user_id,
+                'date_time' : str(self.date_time),
+                'state' : self.state,
+                'priority' : self.priority,
+                'title' : self.title,
+                'task' : self.task,
+                'parent_note_id' : self.parent_note_id,
+                'tag' : self.tag,
+                'children_note_ids' : self.children_note_ids,
+            })
+
+
 class NoteManager(object):
     @staticmethod
-    def createNote(user_id, priority, title, task, parent_note_id, tag):
+    def createNote(user_id, priority, title, task, parent_note_id, tag,
+                   date_time = datetime.datetime.utcnow(),
+                   state = 'TODO', children_note_ids = ''):
         """Create a new Note, return the created note."""
-        date_time = datetime.datetime.utcnow()
-        state = "TODO"
         note = Note(user_id=user_id, date_time=date_time,
                     state=state, priority=priority,
                     title=title, task=task,
                     parent_note_id=parent_note_id,
-                    tag=tag)
+                    tag=tag,
+                    children_note_ids=children_note_ids)
         note_key = note.put()
         note = note_key.get()
         note.note_id = note_key.urlsafe()
@@ -115,10 +130,13 @@ class NoteManager(object):
         return children
 
     @staticmethod
-    def getNotes():
+    def getNotes(backup_all=False):
         """Return all notes in a list."""
         user_id = get_user_id()
-        notes = Note.query(Note.user_id == user_id).fetch()
+        if backup_all and get_user_email() == 'splintcoder@gmail.com':
+            notes = Note.query().fetch()
+        else:
+            notes = Note.query(Note.user_id == user_id).fetch()
         # Update note.children_parent_ids to update notes created before adding this field.
         for note in notes:
             parent = NoteManager.getParent(note)
@@ -135,7 +153,7 @@ class NoteManager(object):
             elif a.priority.upper() != b.priority.upper():
                 return -1 if a.priority.upper() < b.priority.upper() else 1
             elif a.date_time != b.date_time:
-                return -1 if a.date_time < b.date_time else 1
+                return -1 if a.date_time > b.date_time else 1
             return 0
         notes.sort(cmp=comp)
         return notes
@@ -237,6 +255,7 @@ class ListNotesPage(webapp2.RequestHandler):
             value['children'] = NoteManager.getChildren(note)
             note_values.append(value)
         template_values = {
+            'is_admin' : is_admin(),
             'tag_values' : tag_values,
             'note_values' : note_values,
             'need_tag' : need_tag,
@@ -290,4 +309,4 @@ class DeleteNotePage(webapp2.RequestHandler):
             self.response.write("note doesn't belong to current user!")
             return
         NoteManager.removeNote(note)
-        self.response.write(load_template('delete_note.html'))
+        self.response.write(load_template('refresh_to_list_notes.html'))

@@ -1,5 +1,3 @@
-# Copyright 2016 Google Inc.
-#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -25,6 +23,7 @@ from login import LoginPage, AfterLoginPage
 from note import AddNoteFormPage, AddNotePage, DumpNotePage, \
     ListNotesPage, ChangeNoteFormPage, ChangeNotePage, \
     DeleteNotePage
+from note_backup import BackupNotePage, RestoreNoteFormPage, RestoreNotePage
 
 
 
@@ -85,4 +84,7 @@ app = webapp2.WSGIApplication([
     ('/change_note_form', ChangeNoteFormPage),
     ('/change_note', ChangeNotePage),
     ('/delete_note', DeleteNotePage),
+    ('/backup_note', BackupNotePage),
+    ('/restore_note_form', RestoreNoteFormPage),
+    ('/restore_note', RestoreNotePage),
 ], debug=True)

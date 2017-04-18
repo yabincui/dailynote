@@ -1,2 +1,1 @@
-Storage is ok, using datastore
-How to identify the user? use a customized user login code.
+1. 添加备份数据和恢复数据的功能，保证错误更新可以回滚。

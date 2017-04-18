@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title> Restore Note </title>
+    <link type="text/css" rel="stylesheet" href="/css/bootstrap.css">
+<style>
+* {
+  margin: 10px;
+}
+#content {
+  text-align: center;
+}
+    </style>
+  </head>
+
+  <body>
+
+  <ul>
+    <li><span class="li_menu">Restore Notes</span></li>
+    <li><a href="list_notes">List Notes</a></li>
+    <li><a href="add_note">Add Notes</a></li>
+  </ul>
+  <div class="clean"></div>
+  <hr>
+
+  <div id="content">
+  	<form action="restore_note{{ backup_all }}" method="post" enctype="multipart/form-data">
+      <table>
+        <tr>
+          <td>Backup File</td>
+          <td><input type="file" name="backup_file" size="30"></td>
+        </tr>
+        <tr>
+          <td colspan="2">
+        <input type="submit" value="Submit" class="submit">
+          </td>
+        </tr>
+      </table>
+    </form>
+  </div>
+
+  </body>
+</html>
