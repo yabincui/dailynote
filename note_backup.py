@@ -90,4 +90,7 @@ class RestoreNotePage(webapp2.RequestHandler):
             for child_id in child_ids:
                 note.addChildNote(note_id_map[child_id])
             NoteManager.updateNote(note)
-        self.response.write(load_template('refresh_to_list_notes.html'))
+        template_values = {
+            'to_url' : 'list_notes',
+        }
+        self.response.write(load_template('refresh_to_list_notes.html', template_values))

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title> Dump Note </title>
+    <link type="text/css" rel="stylesheet" href="/css/bootstrap.css">
+<style>
+    </style>
+  </head>
+
+  <body>
+  
+  <ul>
+  	<li><span class="li_menu">Upload File</span></li>
+  </ul>
+  <div class="clean"></div>
+  <hr>
+
+<form action="upload_file" method="post" enctype="multipart/form-data">
+      <table>
+        <tr>
+          <td>Upload File</td>
+          <td><input type="file" name="upload_file" size="30"></td>
+	      <td><input type="submit" value="Submit" class="submit"></td>
+        </tr>
+      </table>
+    </form>
+
+	<hr>
+  <ul>
+    <li><span class="li_menu">Download Files</span></li>
+  </ul>
+  <div class="clean"></div>
+  <hr>
+
+    <table width="80%" align="left">
+    	{% for file in file_list %}
+      	<tr>
+      		<td><a href="download_file?file={{ file }}">{{ file }}</a></fd>
+      	</tr>
+      	{% endfor %}
+    </table>
+    <br>
+
+  </div>
+
+
+  </body>
+</html>

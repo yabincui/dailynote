@@ -8,6 +8,10 @@ env_variables:
 handlers:
 - url: /css
   static_dir: css
+- url: /static
+  static_dir: frontend-app/build/static
+- url: /react
+  static_dir: frontend-app/build
 - url: /.*
   secure: always
   script: main.app

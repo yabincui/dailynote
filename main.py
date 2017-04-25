@@ -24,6 +24,8 @@ from note import AddNoteFormPage, AddNotePage, DumpNotePage, \
     ListNotesPage, ChangeNoteFormPage, ChangeNotePage, \
     DeleteNotePage
 from note_backup import BackupNotePage, RestoreNoteFormPage, RestoreNotePage
+from transfer_file import TransferFilePage, UploadFilePage, \
+    DownloadFileFormPage, DownloadFilePage
 
 
 
@@ -87,4 +89,8 @@ app = webapp2.WSGIApplication([
     ('/backup_note', BackupNotePage),
     ('/restore_note_form', RestoreNoteFormPage),
     ('/restore_note', RestoreNotePage),
+    ('/transfer_file', TransferFilePage),
+    ('/transfer_file/upload_file', UploadFilePage),
+    ('/transfer_file/download_file_form', DownloadFileFormPage),
+    ('/transfer_file/download_file', DownloadFilePage),
 ], debug=True)

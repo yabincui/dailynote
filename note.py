@@ -309,4 +309,7 @@ class DeleteNotePage(webapp2.RequestHandler):
             self.response.write("note doesn't belong to current user!")
             return
         NoteManager.removeNote(note)
-        self.response.write(load_template('refresh_to_list_notes.html'))
+        template_values = {
+            'to_url' : 'list_notes',
+        }
+        self.response.write(load_template('refresh_to_list_notes.html', template_values))
