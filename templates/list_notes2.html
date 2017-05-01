@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title> Add Note </title>
+    <link type="text/css" rel="stylesheet" href="/css/bootstrap.css">
+<style>
+</style>
+  </head>
+
+  <body>
+
+  <ul>
+    <li><span class="li_menu">List Notes</span></li>
+    <li><a href="add_note_form">Add Note</a></li>
+    <li><a href="backup_note">Backup Notes</a></li>
+    <li><a href="restore_note_form">Restore Notes</a></li>
+    {% if is_admin %}
+    <li><a href="backup_note?backup_all=True">Backup All Notes</a></li>
+    <li><a href="restore_note_form?restore_all=True">Restore All Notes</a></li>
+    {% endif %}
+    <li><a href="transfer_file">Transfer File</a></li>
+  </ul>
+  <div class="clean"></div>
+  <hr>
+
+  <div class="content">
+    <ul style="font-size:15px;">
+      {% if need_tag == 'ALL' %}
+      <li><span class="li_menu">All tags</span></li>
+      {% else %}
+      <li><a href="list_notes">All tags</a></li>
+      {% endif %}
+    {% for tag in tag_values %}
+      {% if need_tag == tag %}
+      <li><span class="li_menu">{{ tag }}</span></li>
+      {% else %}
+      <li><a href="list_notes?tag={{ tag }}">{{ tag }}</a></li>
+      {% endif %}
+    {% endfor %}
+    </ul>
+    <hr>
+
+  </div>
+  
+     <div id="app"></div>
+
+  <script type="text/javascript" src="{{ js_path }}"></script> 
+
+  </body>
+</html>

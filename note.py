@@ -208,31 +208,47 @@ class DumpNotePage(webapp2.RequestHandler):
     @user_required
     def get(self):
         note_id = self.request.get('note_id')
-        note = NoteManager.getNote(note_id)
-        if note.user_id != get_user_id():
-            self.response.write("note doesn't belong to current user!")
-            return
-        template_values = {
-            'note_id' : str(note.note_id),
-            'user_id' : note.user_id,
-            'user_email' : get_user_email(),
-            'date_time' : formatTime(note.date_time),
-            'state' : note.state,
-            'priority' : note.priority,
-            'title' : note.title,
-            'task' : note.task,
-            'tag' : note.tag,
-        }
-        logging.debug('Dump Note Page, parent_note_id = %s' % note.parent_note_id)
-        template_values['parent'] = NoteManager.getParent(note)
-        template_values['children'] = NoteManager.getChildren(note)
-        self.response.write(load_template('dump_note.html', template_values))
+        return self.redirect('change_note_form?note_id=%s' % str(note.note_id))
+
+# class ListNotesPage_Old(webapp2.RequestHandler):
+#     @user_required
+#     def get(self):
+#         need_tag = self.request.get('tag', 'ALL')
+#         note_values = []
+#         tag_values = set()
+#         for note in NoteManager.getNotes():
+#             tag_values.add(note.tag if note.tag else 'DEFAULT')
+#             if need_tag != 'ALL':
+#                 if need_tag == 'DEFAULT' and not note.tag:
+#                     pass
+#                 elif need_tag != note.tag:
+#                     continue
+#             value = {}
+#             value['note_id'] = str(note.note_id)
+#             value['user_id'] = note.user_id
+#             value['user_email'] = get_user_email()
+#             value['date_time'] = formatTime(note.date_time)
+#             value['state'] = note.state
+#             value['priority'] = note.priority
+#             value['title'] = note.title
+#             value['task'] = note.task
+#             value['tag'] = note.tag
+#             value['parent'] = NoteManager.getParent(note)
+#             value['children'] = NoteManager.getChildren(note)
+#             note_values.append(value)
+#         template_values = {
+#             'is_admin' : is_admin(),
+#             'tag_values' : tag_values,
+#             'note_values' : note_values,
+#             'need_tag' : need_tag,
+#         }
+#         self.response.write(load_template('list_notes.html', template_values))
+
 
 class ListNotesPage(webapp2.RequestHandler):
     @user_required
     def get(self):
         need_tag = self.request.get('tag', 'ALL')
-        note_values = []
         tag_values = set()
         for note in NoteManager.getNotes():
             tag_values.add(note.tag if note.tag else 'DEFAULT')
@@ -241,28 +257,14 @@ class ListNotesPage(webapp2.RequestHandler):
                     pass
                 elif need_tag != note.tag:
                     continue
-            value = {}
-            value['note_id'] = str(note.note_id)
-            value['user_id'] = note.user_id
-            value['user_email'] = get_user_email()
-            value['date_time'] = formatTime(note.date_time)
-            value['state'] = note.state
-            value['priority'] = note.priority
-            value['title'] = note.title
-            value['task'] = note.task
-            value['tag'] = note.tag
-            value['parent'] = NoteManager.getParent(note)
-            value['children'] = NoteManager.getChildren(note)
-            note_values.append(value)
         template_values = {
             'is_admin' : is_admin(),
             'tag_values' : tag_values,
-            'note_values' : note_values,
             'need_tag' : need_tag,
         }
-        self.response.write(load_template('list_notes.html', template_values))
+        self.response.write(load_template('list_notes2.html', template_values))
 
-class ChangeNoteFormPage(webapp2.RequestHandler):
+class ChangeNoteFormPage_Old(webapp2.RequestHandler):
     @user_required
     def get(self):
         note_id = self.request.get('note_id')
@@ -284,10 +286,27 @@ class ChangeNoteFormPage(webapp2.RequestHandler):
         logging.info("priority is %s" % note.priority)
         self.response.write(load_template('change_note.html', template_values))
 
+
+class ChangeNoteFormPage(webapp2.RequestHandler):
+    @user_required
+    def get(self):
+        note_id = self.request.get('note_id')
+        note = NoteManager.getNote(note_id)
+        if note.user_id != get_user_id():
+            self.response.write("note doesn't belong to current user!")
+            return
+        template_values = {
+            'note_id' : str(note.note_id),
+        }
+        logging.info("priority is %s" % note.priority)
+        self.response.write(load_template('change_note2.html', template_values))
+
+
 class ChangeNotePage(webapp2.RequestHandler):
     @user_required
     def post(self):
         note_id = self.request.get('note_id')
+        logging.info('changeNote: note_id = %s' % note_id)
         note = NoteManager.getNote(note_id)
         if note.user_id != get_user_id():
             self.response.write("note doesn't belong to current user!")
@@ -298,7 +317,7 @@ class ChangeNotePage(webapp2.RequestHandler):
         note.priority = self.request.get('priority')
         note.tag = self.request.get('tag')
         NoteManager.updateNote(note)
-        return self.redirect('dump_note?note_id=%s' % str(note.note_id))
+        self.response.write('ok')
 
 class DeleteNotePage(webapp2.RequestHandler):
     @user_required
@@ -313,3 +332,64 @@ class DeleteNotePage(webapp2.RequestHandler):
             'to_url' : 'list_notes',
         }
         self.response.write(load_template('refresh_to_list_notes.html', template_values))
+
+
+class GetNotePage(webapp2.RequestHandler):
+    @user_required
+    def get(self):
+        note_id = self.request.get('note_id')
+        note = NoteManager.getNote(note_id)
+        if note.user_id != get_user_id():
+            self.response.write("note doesn't belong to current user!")
+            return
+        parent = NoteManager.getParent(note)
+        children = NoteManager.getChildren(note)
+        
+        parent_info = {}
+        if parent:
+            parent_info = {
+                'note_id' : parent.note_id,
+                'title' : parent.title,
+            }
+        children_info = []
+        for child in children:
+            children_info.append({
+                    'note_id': child.note_id,
+                    'title' : child.title,
+                })
+
+        json_str = json.dumps({
+            'note_id' : note.note_id,
+            'user_id' : note.user_id,
+            'date_time' : str(note.date_time),
+            'state' : note.state,
+            'priority' : note.priority,
+            'title' : note.title,
+            'task' : note.task,
+            'tag' : note.tag,
+            'parent' : parent_info,
+            'children' : children_info,
+            })
+
+        self.response.write(json_str)
+
+
+class GetNoteIdsPage(webapp2.RequestHandler):
+    @user_required
+    def get(self):
+        need_tag = self.request.get('tag', 'ALL')
+        note_ids = []
+        tag_values = set()
+        for note in NoteManager.getNotes():
+            tag_values.add(note.tag if note.tag else 'DEFAULT')
+            if need_tag != 'ALL':
+                if need_tag == 'DEFAULT' and not note.tag:
+                    pass
+                elif need_tag != note.tag:
+                    continue
+            note_ids.append(note.note_id)
+        json_str = json.dumps({
+            'note_ids': note_ids,
+            })
+        self.response.write(json_str)
+

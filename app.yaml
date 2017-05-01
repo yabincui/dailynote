@@ -10,8 +10,6 @@ handlers:
   static_dir: css
 - url: /static
   static_dir: frontend-app/build/static
-- url: /react
-  static_dir: frontend-app/build
 - url: /.*
   secure: always
   script: main.app
@@ -21,3 +19,6 @@ libraries:
   version: latest
 - name: jinja2
   version: latest
+
+skip_files:
+- ^frontend-app/node_modules

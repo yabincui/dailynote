@@ -14,6 +14,10 @@
   color: white;
 }
 
+.WantHide {
+	display: none;
+}
+
 .App-intro {
   font-size: large;
 }
@@ -21,4 +25,9 @@
 @keyframes App-logo-spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
+}
+
+ul {
+	display: inline-block;
+	text-align: left;
 }

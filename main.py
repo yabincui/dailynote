@@ -22,12 +22,11 @@ from template import TemplatePage, load_template
 from login import LoginPage, AfterLoginPage
 from note import AddNoteFormPage, AddNotePage, DumpNotePage, \
     ListNotesPage, ChangeNoteFormPage, ChangeNotePage, \
-    DeleteNotePage
+    DeleteNotePage, GetNotePage, GetNoteIdsPage
 from note_backup import BackupNotePage, RestoreNoteFormPage, RestoreNotePage
 from transfer_file import TransferFilePage, UploadFilePage, \
     DownloadFileFormPage, DownloadFilePage
-
-
+from react import ReactPage
 
 class MainPage(webapp2.RequestHandler):
     def get(self):
@@ -89,8 +88,11 @@ app = webapp2.WSGIApplication([
     ('/backup_note', BackupNotePage),
     ('/restore_note_form', RestoreNoteFormPage),
     ('/restore_note', RestoreNotePage),
+    ('/get_note', GetNotePage),
+    ('/get_note_ids', GetNoteIdsPage),
     ('/transfer_file', TransferFilePage),
     ('/transfer_file/upload_file', UploadFilePage),
     ('/transfer_file/download_file_form', DownloadFileFormPage),
     ('/transfer_file/download_file', DownloadFilePage),
+    ('/react', ReactPage),
 ], debug=True)
