@@ -71,6 +71,14 @@ class Note(ndb.Model):
             return []
         children = self.children_note_ids.split(':')
         return children
+    
+    def getTags(self):
+        tags = ['ALL']
+        if self.tag:
+            for i in self.tag.split(','):
+                tags.append(i.strip())
+        return tags
+
 
     def toString(self):
         return json.dumps({
@@ -208,7 +216,7 @@ class DumpNotePage(webapp2.RequestHandler):
     @user_required
     def get(self):
         note_id = self.request.get('note_id')
-        return self.redirect('change_note_form?note_id=%s' % str(note.note_id))
+        return self.redirect('change_note_form?note_id=%s' % str(note_id))
 
 # class ListNotesPage_Old(webapp2.RequestHandler):
 #     @user_required
@@ -250,13 +258,10 @@ class ListNotesPage(webapp2.RequestHandler):
     def get(self):
         need_tag = self.request.get('tag', 'ALL')
         tag_values = set()
+        tag_values.add('ALL')
         for note in NoteManager.getNotes():
-            tag_values.add(note.tag if note.tag else 'DEFAULT')
-            if need_tag != 'ALL':
-                if need_tag == 'DEFAULT' and not note.tag:
-                    pass
-                elif need_tag != note.tag:
-                    continue
+            for tag in note.getTags():
+                tag_values.add(tag)
         template_values = {
             'is_admin' : is_admin(),
             'tag_values' : tag_values,
@@ -379,15 +384,11 @@ class GetNoteIdsPage(webapp2.RequestHandler):
     def get(self):
         need_tag = self.request.get('tag', 'ALL')
         note_ids = []
-        tag_values = set()
         for note in NoteManager.getNotes():
-            tag_values.add(note.tag if note.tag else 'DEFAULT')
-            if need_tag != 'ALL':
-                if need_tag == 'DEFAULT' and not note.tag:
-                    pass
-                elif need_tag != note.tag:
-                    continue
-            note_ids.append(note.note_id)
+            for tag in note.getTags():
+                if need_tag == tag:
+                    note_ids.append(note.note_id)
+                    break
         json_str = json.dumps({
             'note_ids': note_ids,
             })

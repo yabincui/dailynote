@@ -22,6 +22,20 @@ var styles = {
 		textAlign: 'left',
 		
 	},
+	
+	td: {
+		border: '1px solid #777777',
+		padding: '10px',
+		color: '#cca78d',
+	},
+	
+	tdA: {
+		textDecoration: 'none',
+		backgroundColor: '#b5ef9b',
+		color: 'white',
+		padding: '10px',
+		margin: '20px',
+	}
 }
 
 class NoteElement extends Component {
@@ -156,10 +170,11 @@ class NoteElement extends Component {
 		console.dir(this.data.toJS());
 		
 		let parent_row = null;
-		if (note.parent) {
+		if (note.parent && note.parent.note_id) {
 			parent_row = (<tr>
 					<td>Parent</td>
-					<td><a href={"change_note_form?note_id=" + note.parent.note_id}>
+					<td><a href={"change_note_form?note_id=" + note.parent.note_id}
+							style={styles.tdA}>
 						{note.parent.title}</a></td>
 				</tr>);
 		}
@@ -170,7 +185,8 @@ class NoteElement extends Component {
 					<td>Children</td>
 					<td>{
 						note.children.map((child) => (
-							<a href={"change_note_form?note_id=" + child.note_id}>
+							<a href={"change_note_form?note_id=" + child.note_id}
+								style={styles.tdA}>
 							{child.title}
 							</a>
 						))
@@ -225,10 +241,24 @@ class NoteElement extends Component {
 		
 		let tag_row = (
 			<tr>
-				<td> Tag </td>
+				<td> Tag (sep by ',') </td>
 				<td>
 					<input type="text" style={styles.title} value={note.tag}
 						onChange={this.onTagChange} />
+				</td>
+			</tr>
+		);
+		
+		let link_row = (
+			<tr>
+				<td> Links </td>
+				<td>
+					<a href={"add_note_form?parent_note_id=" + note.note_id}
+						style={styles.tdA}>
+						Add Sub Note</a>
+					<a href={"delete_note?note_id=" + note.note_id}
+						style={styles.tdA}>
+						Delete Note</a>
 				</td>
 			</tr>
 		);
@@ -249,6 +279,7 @@ class NoteElement extends Component {
 				{ tag_row }
 				{ parent_row }
 				{ children_row }
+				{ link_row }
 				
 			</table>
 			</section>
