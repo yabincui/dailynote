@@ -8,18 +8,75 @@ import { getAllUrlParams } from './GetUrlParams';
 
 
 var styles = {
+
+	ul: {
+		listStyleType: 'none',
+		margin: '0',
+		padding: '0',
+		overflow: 'hidden',
+		fontSize: '15px',
+	},
+	
+	li: {
+		float: 'left',
+	},
+
+	liMenu: {
+		display: 'block',
+		color: 'white',
+		textAlign: 'center',
+		textDecoration: 'none',
+		backgroundColor: '#b2dcf5',
+		padding: '16px',
+		margin: '5px 5px 5px 5px',
+		height: '20px',
+	},
+	
+	liA: {
+		display: 'block',
+		color: 'white',
+		textAlign: 'center',
+		textDecoration: 'none',
+		backgroundColor: '#b5ef9b',
+		padding: '16px',
+		margin: '5px 5px 5px 5px',
+		height: '20px',
+		
+		':hover': {
+			backgroundColor: '#b2dcf5',
+		},
+	},
+	
+	
+
+	borderTable: {
+		border: '5px solid #c4d9c6',
+	},
+	
+	noBorderTable: {
+		border: '0',	
+	},
+
 	title: {
 		fontFamily: 'Courier New, Courier, monospace',
 		color: '#cca78d',
 		fontWeight: 'bold',
 		fontSize: '30px',
 		textAlign: 'center',
+		width: '99%',
 	},
+	
+	noPaddingTr: {
+		border: '0',
+		padding: '0',
+	},
+	
 	task: {
 		fontFamily: 'Courier New, Courier, monospace',
 		color: '#cca78d',
 		fontSize: '20px',
 		textAlign: 'left',
+		width: '99%',
 		
 	},
 	
@@ -33,9 +90,13 @@ var styles = {
 		textDecoration: 'none',
 		backgroundColor: '#b5ef9b',
 		color: 'white',
-		padding: '10px',
+		padding: '8px',
 		margin: '20px',
-	}
+	},
+
+	tdZeroWidth: {
+		width: '0%',
+	},
 }
 
 class NoteElement extends Component {
@@ -168,7 +229,14 @@ class NoteElement extends Component {
 		let note = this.data.toJS();
 		console.log('NoteElement.render');
 		console.dir(this.data.toJS());
-		
+
+		let date_row = (
+			<tr>
+				<td>Date</td>
+				<td>{ note.date_time.substring(0, note.date_time.indexOf('.')) }</td>
+			</tr>
+		);
+
 		let parent_row = null;
 		if (note.parent && note.parent.note_id) {
 			parent_row = (<tr>
@@ -179,7 +247,7 @@ class NoteElement extends Component {
 				</tr>);
 		}
 		let children_row = null;
-		if (note.children) {
+		if (note.children && note.children.length > 0) {
 			children_row = (
 				<tr>
 					<td>Children</td>
@@ -220,7 +288,7 @@ class NoteElement extends Component {
 		let title_row = (
 			<tr>
 				<td> Title </td>
-				<td>
+				<td style={styles.noPaddingTr}>
 					<input style={styles.title} class="title" type="text" name="title" size="30" value={note.title}
 						onChange={this.onTitleChange} />
 				</td>
@@ -230,10 +298,9 @@ class NoteElement extends Component {
 		let task_rows = note.task.split('\n').length + 1;
 		
 		let task_row = (
-			<tr>
-				<td> Task </td>
-				<td>
-					<textarea rows={task_rows} cols="60" style={styles.task} value={note.task}
+			<tr style={styles.noPaddingTr}>
+				<td style={styles.noPaddingTr}>
+					<textarea rows={task_rows} style={styles.task} value={note.task}
 						onChange={this.onTaskChange} />
 				</td>
 			</tr>
@@ -242,7 +309,7 @@ class NoteElement extends Component {
 		let tag_row = (
 			<tr>
 				<td> Tag (sep by ',') </td>
-				<td>
+				<td style={styles.noPaddingTr}>
 					<input type="text" style={styles.title} value={note.tag}
 						onChange={this.onTagChange} />
 				</td>
@@ -253,6 +320,9 @@ class NoteElement extends Component {
 			<tr>
 				<td> Links </td>
 				<td>
+					<a href={"change_note_form?note_id=" + note.note_id}
+						style={styles.tdA}>
+						Change Note</a>
 					<a href={"add_note_form?parent_note_id=" + note.note_id}
 						style={styles.tdA}>
 						Add Sub Note</a>
@@ -266,20 +336,22 @@ class NoteElement extends Component {
 
 		return (
 			<section>
-			<table width="100%">
+			<table width="100%" style={styles.borderTable}>
+			  <table width="100%" style={styles.noBorderTable}>
 				<col width="20px" />
-				<tr>
-					<td>Date</td>
-					<td>{ note.date_time }</td>
-				</tr>
+				{ date_row }
 				{ state_row }
 				{ priority_row }
 				{ title_row }
-				{ task_row }
 				{ tag_row }
 				{ parent_row }
 				{ children_row }
 				{ link_row }
+			  </table>
+			  
+			  <table width="100%" style={styles.noBorderTable}>
+			  	{task_row}
+			  </table>
 				
 			</table>
 			</section>
@@ -288,6 +360,45 @@ class NoteElement extends Component {
 }
 
 var NoteElementWrapper = Radium(NoteElement);
+
+
+class TagsElement extends Component {
+
+
+	tagToJSX = (tag, need_tag) => {
+		let li_content = null;
+		if (tag == need_tag) {
+			li_content = (<span style={styles.liMenu}>{tag}</span>);
+		} else if (tag == 'ALL') {
+			li_content = (<a style={styles.liA} key={tag} href="list_notes">{tag}</a>);
+		} else {
+			li_content = (<a style={styles.liA} key={tag} href={"list_notes?tag=" + tag}>{tag}</a>);
+		}
+		return (<li style={styles.li}>{li_content}</li>);
+	}
+	
+	render() {
+		let tags = this.props.tags
+		let need_tag = this.props.need_tag
+		
+		let all_tag_item = this.tagToJSX('ALL', need_tag);
+		
+		let tag_items = tags.map(tag => this.tagToJSX(tag, need_tag));
+		
+		
+		return (
+			<section>
+				<ul style={styles.ul}>
+					{all_tag_item}
+					{tag_items}
+				</ul>
+				
+			</section>
+		);
+	}
+}
+
+var TagsElementWrapper = Radium(TagsElement);
 
 class ChangeNotePage extends Component {
 
@@ -311,7 +422,8 @@ class ListNotePage extends Component {
 
 	state = {
 		data: fromJS({
-			tag: '',
+			need_tag: '',
+			tags: [],
 			note_ids: [],
 		}),
 	}
@@ -336,7 +448,7 @@ class ListNotePage extends Component {
 		}
 		
 		console.log('tag = ' + tag);
-		this.data = this.data.set('tag', tag);
+		this.data = this.data.set('need_tag', tag);
 	
 		axios.get('/get_note_ids', {
 			params: {
@@ -357,16 +469,18 @@ class ListNotePage extends Component {
 		this.setState((prevState, props) => {
 			let obj = prevState.data.toJS();
 			obj.note_ids = response.note_ids;
+			obj.tags = response.tags;
 			return {data: fromJS(obj)};
 		});
 	}
 	
 	render() {
-		const { note_ids } = this.data.toJS();
+		const { need_tag, tags, note_ids } = this.data.toJS();
 		console.log("ListNotePage.render, this.data = ");
 		console.dir(this.data.toJS());
 		return (
 			<section>
+				<TagsElementWrapper tags={tags} need_tag={need_tag} />
 				{note_ids.map(i => (
 					<NoteElementWrapper note_id={i} />
 				))}
