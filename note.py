@@ -51,6 +51,7 @@ class Note(ndb.Model):
     parent_note_id = ndb.StringProperty()
     tag = ndb.StringProperty()
     children_note_ids = ndb.StringProperty()
+    shared_users = ndb.StringProperty()
 
     def addChildNote(self, child_note):
         if self.children_note_ids:
@@ -79,6 +80,26 @@ class Note(ndb.Model):
                 tags.append(i.strip())
         return tags
 
+    def getSharedUsers(self):
+        users = []
+        if self.shared_users:
+            for i in self.shared_users.split(','):
+                users.append(i.strip())
+        return users
+
+    def canBeVisitedByCurrentUser(self):
+        if self.user_id == get_user_id():
+            return True
+        user_email = get_user_email()
+        for email in self.getSharedUsers():
+            if email == user_email:
+                return True
+        return False
+
+
+    def canBeDeletedByCurrentUser(self):
+        return self.user_id == get_user_id()
+        
 
     def toString(self):
         return json.dumps({
@@ -92,6 +113,7 @@ class Note(ndb.Model):
                 'parent_note_id' : self.parent_note_id,
                 'tag' : self.tag,
                 'children_note_ids' : self.children_note_ids,
+                'shared_users' : self.shared_users,
             })
 
 
@@ -140,19 +162,16 @@ class NoteManager(object):
     @staticmethod
     def getNotes(backup_all=False):
         """Return all notes in a list."""
-        user_id = get_user_id()
+        all_notes = Note.query().fetch()
+        
+        ignore_user_check = False
         if backup_all and get_user_email() == 'splintcoder@gmail.com':
-            notes = Note.query().fetch()
-        else:
-            notes = Note.query(Note.user_id == user_id).fetch()
-        # Update note.children_parent_ids to update notes created before adding this field.
-        for note in notes:
-            parent = NoteManager.getParent(note)
-            if parent:
-                children_ids = parent.getChildrenNoteIds()
-                if not note.note_id in children_ids:
-                    parent.addChildNote(note)
-                    parent.put()
+            ignore_user_check = True
+        
+        notes = []
+        for note in all_notes:
+            if ignore_user_check or note.canBeVisitedByCurrentUser():
+                notes.append(note)
 
         # Sort notes based on state, priority and timestamp.
         def comp(a, b):
@@ -240,7 +259,7 @@ class ChangeNoteFormPage(webapp2.RequestHandler):
     def get(self):
         note_id = self.request.get('note_id')
         note = NoteManager.getNote(note_id)
-        if note.user_id != get_user_id():
+        if not note.canBeVisitedByCurrentUser():
             self.response.write("note doesn't belong to current user!")
             return
         template_values = {
@@ -256,14 +275,15 @@ class ChangeNotePage(webapp2.RequestHandler):
         note_id = self.request.get('note_id')
         logging.info('changeNote: note_id = %s' % note_id)
         note = NoteManager.getNote(note_id)
-        if note.user_id != get_user_id():
-            self.response.write("note doesn't belong to current user!")
+        if not note.canBeVisitedByCurrentUser():
+            self.response.write("note can't be changed by current user!")
             return
         note.title = self.request.get('title')
         note.task = self.request.get('task')
         note.state = self.request.get('state')
         note.priority = self.request.get('priority')
         note.tag = self.request.get('tag')
+        note.shared_users = self.request.get('shared_users')
         NoteManager.updateNote(note)
         self.response.write('ok')
 
@@ -287,7 +307,7 @@ class GetNotePage(webapp2.RequestHandler):
     def get(self):
         note_id = self.request.get('note_id')
         note = NoteManager.getNote(note_id)
-        if note.user_id != get_user_id():
+        if not note.canBeVisitedByCurrentUser():
             self.response.write("note doesn't belong to current user!")
             return
         parent = NoteManager.getParent(note)
@@ -305,6 +325,9 @@ class GetNotePage(webapp2.RequestHandler):
                     'note_id': child.note_id,
                     'title' : child.title,
                 })
+        shared_users = ''
+        if note.shared_users:
+            shared_users = note.shared_users
 
         json_str = json.dumps({
             'note_id' : note.note_id,
@@ -317,6 +340,7 @@ class GetNotePage(webapp2.RequestHandler):
             'tag' : note.tag,
             'parent' : parent_info,
             'children' : children_info,
+            'shared_users' : shared_users,
             })
 
         self.response.write(json_str)

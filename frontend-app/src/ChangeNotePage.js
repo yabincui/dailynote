@@ -181,6 +181,17 @@ class NoteElement extends Component {
 		});
 	}
 	
+	
+	onSharedUsersChange = (event) => {
+		let value = event.target.value;
+		this.setState((prevState, props) => {
+			let obj = prevState.data.toJS();
+			obj.shared_users = value;
+			this.uploadNoteChange(obj);
+			return { data: fromJS(obj) };
+		});
+	}
+	
 	onTitleChange = (event) => {
 		let value = event.target.value;
 		this.setState((prevState, props) => {
@@ -221,6 +232,7 @@ class NoteElement extends Component {
 		data.append('state', note.state);
 		data.append('priority', note.priority);
 		data.append('tag', note.tag);
+		data.append('shared_users', note.shared_users);
 		axios.post('/change_note', data);
 	}
 	
@@ -281,6 +293,16 @@ class NoteElement extends Component {
 						<option value="P3">P3</option>
 						<option value="P4">P4</option>
 					</select>
+				</td>
+			</tr>
+		);
+		
+		let shared_users_row = (
+			<tr>
+				<td> Shared users </td>
+				<td style={styles.noPaddingTr}>
+					<input style={styles.title} type="text" value={note.shared_users}
+						onChange={this.onSharedUsersChange} />
 				</td>
 			</tr>
 		);
@@ -346,6 +368,7 @@ class NoteElement extends Component {
 				{ tag_row }
 				{ parent_row }
 				{ children_row }
+				{ shared_users_row }
 				{ link_row }
 			  </table>
 			  
